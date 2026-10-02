@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% from "_macros.html" import applicant_fields %}
+{% block title %}Applicants – Admission Office{% endblock %}
+{% block content %}
+<h1>Applicants</h1>
+<section class="panel">
+  <h2>Register an applicant</h2>
+  <form method="post" class="grid">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    {{ applicant_fields(form) }}
+    <button class="btn">Register applicant</button>
+  </form>
+</section>
+<form method="get" class="search">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search by name, email, phone or ID" aria-label="Search applicants">
+  <button class="btn ghost">Search</button>
+</form>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>ID</th><th>Name</th><th>Date of birth</th><th>Gender</th><th>Phone</th><th>Email</th><th class="num">Cutoff</th><th></th></tr></thead>
+  <tbody>
+  {% for a in applicants %}
+  <tr>
+    <td>{{ a.applicant_id }}</td><td>{{ a.name }}</td><td>{{ a.dob }}</td><td>{{ a.gender }}</td><td>{{ a.phone }}</td><td>{{ a.email }}</td>
+    <td class="num">{{ '%g'|format(a.cutoff_mark) }}</td>
+    <td class="actions">
+      <a href="{{ url_for('applicants_edit', applicant_id=a.applicant_id) }}">Edit</a>
+      <form method="post" action="{{ url_for('applicants_delete', applicant_id=a.applicant_id) }}" onsubmit="return confirm('Delete {{ a.name|e }}?')">
+        <input type="hidden" name="csrf" value="{{ csrf_token() }}"><button class="linklike danger">Delete</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="8" class="empty">{{ 'No applicants match “' ~ q ~ '”.' if q else 'No applicants yet. Register the first applicant above.' }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

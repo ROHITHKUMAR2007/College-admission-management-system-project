@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – Admission Office{% endblock %}
+{% block content %}
+<h1>Admissions overview</h1>
+<dl class="stats">
+  <div><dt>Applicants</dt><dd>{{ stats.applicants }}</dd></div>
+  <div><dt>Pending applications</dt><dd>{{ stats.pending }}</dd></div>
+  <div><dt>Approved</dt><dd>{{ stats.approved }}</dd></div>
+  <div><dt>Rejected</dt><dd>{{ stats.rejected }}</dd></div>
+  <div><dt>Fees collected</dt><dd>{{ stats.collected|inr }}</dd></div>
+</dl>
+
+<h2>Seats by course</h2>
+<ul class="seats">
+  {% for s in seats %}
+  {% set used = s.total_seats - s.seats_available %}
+  <li>
+    <div class="seat-head"><strong>{{ s.course_name }}</strong><span class="muted">{{ s.seats_available }} of {{ s.total_seats }} seats free</span></div>
+    <div class="bar" role="img" aria-label="{{ used }} of {{ s.total_seats }} seats allotted"><span style="width: {{ (used / s.total_seats * 100)|round(1) }}%"></span></div>
+  </li>
+  {% endfor %}
+</ul>
+{% if stats.pending %}
+<p class="note">{{ stats.pending }} application{{ 's' if stats.pending != 1 }} waiting. <a href="{{ url_for('applications', status='PENDING') }}">Review pending applications</a></p>
+{% endif %}
+{% endblock %}

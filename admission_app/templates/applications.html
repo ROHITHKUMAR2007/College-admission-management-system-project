@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% from "_macros.html" import chip %}
+{% block title %}Applications – Admission Office{% endblock %}
+{% block content %}
+<h1>Applications</h1>
+<section class="panel">
+  <h2>Submit an application</h2>
+  <form method="post" class="grid">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    <label>Applicant
+      <select name="applicant_id" required><option value="">Select applicant</option>
+        {% for a in applicants %}<option value="{{ a.applicant_id }}">{{ a.name }} (cutoff {{ '%g'|format(a.cutoff_mark) }})</option>{% endfor %}
+      </select>
+    </label>
+    <label>Course
+      <select name="course_id" required><option value="">Select course</option>
+        {% for c in courses %}<option value="{{ c.course_id }}">{{ c.course_name }} ({{ c.seats_available }} seats free)</option>{% endfor %}
+      </select>
+    </label>
+    <button class="btn">Submit application</button>
+  </form>
+</section>
+
+<div class="toolbar">
+  <nav class="filters" aria-label="Filter by status">
+    {% for s, t in [('', 'All'), ('PENDING', 'Pending'), ('APPROVED', 'Approved'), ('REJECTED', 'Rejected')] %}
+    <a href="{{ url_for('applications', status=s) if s else url_for('applications') }}" class="{{ 'on' if status == s }}">{{ t }}</a>
+    {% endfor %}
+  </nav>
+  <form method="post" action="{{ url_for('applications_process_all') }}">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    <button class="btn" title="Highest cutoff first. Minimum cutoff {{ '%g'|format(min_cutoff) }}.">Process all pending by merit</button>
+  </form>
+</div>
+<p class="muted small">Rule: an application is approved when the cutoff is at least {{ '%g'|format(min_cutoff) }} and a seat is free.</p>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>ID</th><th>Applicant</th><th class="num">Cutoff</th><th>Course</th><th>Applied on</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for i in items %}
+  <tr>
+    <td>{{ i.application_id }}</td><td>{{ i.name }}</td><td class="num">{{ '%g'|format(i.cutoff_mark) }}</td>
+    <td>{{ i.course_name }}</td><td>{{ i.apply_date }}</td><td>{{ chip(i.status) }}</td>
+    <td class="actions">
+      {% if i.status == 'PENDING' %}
+      <form method="post" action="{{ url_for('applications_process', application_id=i.application_id) }}">
+        <input type="hidden" name="csrf" value="{{ csrf_token() }}"><button class="linklike">Process</button>
+      </form>
+      <form method="post" action="{{ url_for('applications_delete', application_id=i.application_id) }}" onsubmit="return confirm('Withdraw this application?')">
+        <input type="hidden" name="csrf" value="{{ csrf_token() }}"><button class="linklike danger">Withdraw</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="7" class="empty">No applications{{ ' with this status' if status }}.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

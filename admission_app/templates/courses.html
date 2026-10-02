@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "_macros.html" import course_fields %}
+{% block title %}Courses – Admission Office{% endblock %}
+{% block content %}
+<h1>Courses</h1>
+<section class="panel">
+  <h2>Add a course</h2>
+  <form method="post" class="grid">
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    {{ course_fields(form) }}
+    <button class="btn">Add course</button>
+  </form>
+</section>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>ID</th><th>Course</th><th>Dept</th><th class="num">Fees</th><th class="num">Seats free / total</th><th></th></tr></thead>
+  <tbody>
+  {% for c in courses %}
+  <tr>
+    <td>{{ c.course_id }}</td><td>{{ c.course_name }}</td><td>{{ c.department }}</td>
+    <td class="num">{{ c.fees|inr }}</td><td class="num">{{ c.seats_available }} / {{ c.total_seats }}</td>
+    <td class="actions">
+      <a href="{{ url_for('courses_edit', course_id=c.course_id) }}">Edit</a>
+      <form method="post" action="{{ url_for('courses_delete', course_id=c.course_id) }}" onsubmit="return confirm('Delete {{ c.course_name|e }}?')">
+        <input type="hidden" name="csrf" value="{{ csrf_token() }}"><button class="linklike danger">Delete</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="6" class="empty">No courses yet. Add the first course above.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

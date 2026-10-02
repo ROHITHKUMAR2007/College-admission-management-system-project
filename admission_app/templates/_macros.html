@@ -1,0 +1,24 @@
+{% macro chip(status) %}<span class="chip {{ status|lower }}">{{ status|capitalize }}</span>{% endmacro %}
+
+{% macro course_fields(f) %}
+<label>Course name<input name="course_name" value="{{ f.course_name or '' }}" required></label>
+<label>Department<input name="department" value="{{ f.department or '' }}" required></label>
+<label>Total seats<input name="total_seats" type="number" min="1" value="{{ f.total_seats or '' }}" required></label>
+<label>Fees (₹)<input name="fees" type="number" min="0" step="0.01" value="{{ f.fees if f.fees is not none else '' }}" required></label>
+{% endmacro %}
+
+{% macro applicant_fields(f) %}
+<label>Full name<input name="name" value="{{ f.name or '' }}" required></label>
+<label>Date of birth<input name="dob" type="date" value="{{ f.dob or '' }}" required></label>
+<label>Gender
+  <select name="gender" required>
+    <option value="">Select</option>
+    {% for v, t in [('M','Male'),('F','Female'),('O','Other')] %}
+    <option value="{{ v }}" {{ 'selected' if f.gender == v }}>{{ t }}</option>
+    {% endfor %}
+  </select>
+</label>
+<label>Phone<input name="phone" inputmode="numeric" maxlength="10" value="{{ f.phone or '' }}" required></label>
+<label>Email<input name="email" type="email" value="{{ f.email or '' }}" required></label>
+<label>Cutoff mark (0–100)<input name="cutoff_mark" type="number" min="0" max="100" step="0.01" value="{{ f.cutoff_mark if f.cutoff_mark is not none else '' }}" required></label>
+{% endmacro %}

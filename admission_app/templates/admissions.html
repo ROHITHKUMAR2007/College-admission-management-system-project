@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Admissions – Admission Office{% endblock %}
+{% block content %}
+<h1>Admissions</h1>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>ID</th><th>Student</th><th>Course</th><th>Admitted on</th><th class="num">Fees</th><th class="num">Paid</th><th class="num">Balance</th></tr></thead>
+  <tbody>
+  {% for a in items %}
+  <tr><td>{{ a.admission_id }}</td><td>{{ a.name }}</td><td>{{ a.course_name }}</td><td>{{ a.admission_date }}</td>
+      <td class="num">{{ a.fees|inr }}</td><td class="num">{{ a.paid|inr }}</td><td class="num">{{ a.balance|inr }}</td></tr>
+  {% else %}<tr><td colspan="7" class="empty">No admissions yet. Approve a pending application to admit a student.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Reports – Admission Office{% endblock %}
+{% block content %}
+<h1>Reports</h1>
+{% for key, title, items in data %}
+<section class="report">
+  <div class="toolbar"><h2>{{ title }}</h2><a class="btn ghost" href="{{ url_for('reports_csv', name=key) }}">Download CSV</a></div>
+  <div class="table-wrap">
+  <table>
+    {% if items %}
+    <thead><tr>{% for k in items[0].keys() %}<th>{{ k }}</th>{% endfor %}</tr></thead>
+    <tbody>{% for r in items %}<tr>{% for v in r %}<td>{{ v }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+    {% else %}<tbody><tr><td class="empty">Nothing to report yet.</td></tr></tbody>{% endif %}
+  </table>
+  </div>
+</section>
+{% endfor %}
+{% endblock %}
